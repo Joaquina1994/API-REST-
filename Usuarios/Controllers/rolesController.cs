@@ -89,17 +89,30 @@ namespace ApiProgramacionIV.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRolModel(int id)
         {
+
+            // busca si al menos un usuario tiene asignado el id rol, si esta asignado no se puede borrar
+            var usuarioConRol = await _context.Usuarios.AnyAsync(u => u.IdRol == id);
+            if (usuarioConRol)
+            {
+                return BadRequest();
+            }
+            
+            
+            
+            // busca en la tabla roles si esta el id
             var rolModel = await _context.Roles.FindAsync(id);
+           
             if (rolModel == null)
             {
                 return NotFound();
             }
 
+            
             rolModel.Estado = false; // cambia el estado a 0, por lo tanto el rol esta borrado
 
 
             // actualiza y guarda los cambios en la base de datos
-            _context.Roles.Remove(rolModel);
+            _context.Roles.Update(rolModel);
             await _context.SaveChangesAsync();
 
             return NoContent();

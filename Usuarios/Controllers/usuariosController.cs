@@ -126,6 +126,8 @@ namespace ApiProgramacionIV.Controllers
             }
         }
 
+
+
         [HttpPut]
         public async Task<IActionResult> UpdateUsuario(usuarios usuarioModel)
         {
