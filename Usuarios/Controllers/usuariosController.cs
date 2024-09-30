@@ -66,10 +66,10 @@ namespace ApiProgramacionIV.Controllers
             {
                 var usuariosPorRoles = await _context.Usuarios
                     .Include(u => u.Rol)
-                    .GroupBy(r => new {r.Nombre,  r.Rol.NombreRol }) // VER LO DE LA EDAD 
+                    .GroupBy(r => new {r.Nombre,  r.Rol.NombreRol }) // agrupa por nombre y rol 
                     .Select(s => new
                     {
-                        Nombre = s.Key.Nombre, // VER LO DE LA EDAD 
+                        Nombre = s.Key.Nombre, 
                         Nombre_Rol = s.Key.NombreRol,
                         Cantidad_Usuarios = s.Count()
                     })
@@ -111,11 +111,26 @@ namespace ApiProgramacionIV.Controllers
             }
         }
 
+        /* 
+         * cambie el codigo y le agregue validaciones porque me cambiaba el idrol, y me creaba un nuevo rol
+         */
+
         [HttpPost]
         public async Task<IActionResult> CreateUsuario(usuarios usuarioModel)
         {
             try
             {
+                // Busca si cuando el usuario se crea, el rol que intenta asignar existe
+                var existeRol = await _context.Roles.FindAsync(usuarioModel.IdRol);
+
+                if (existeRol == null)
+                {
+                    return BadRequest("El rol asignado no existe.");
+                }
+
+                // Asigna el rol existente al usuario
+                usuarioModel.Rol = existeRol;
+
                 _context.Usuarios.Add(usuarioModel);
                 await _context.SaveChangesAsync();
                 return Ok(usuarioModel);
@@ -125,6 +140,7 @@ namespace ApiProgramacionIV.Controllers
                 return BadRequest($"Hubo un problema, error: {ex.Message}");
             }
         }
+
 
 
 

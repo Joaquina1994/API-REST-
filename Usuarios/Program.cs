@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
 using Usuarios.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// En tu archivo Startup o donde configures el contexto
+builder.Services.AddDbContext<usuariosContext>(options =>
+    options.UseLazyLoadingProxies()
+           .UseSqlServer("conexion"));
+
 
 var app = builder.Build();
 
